@@ -80,29 +80,38 @@ document.addEventListener('DOMContentLoaded', () => {
     if (statsContainer) observer.observe(statsContainer);
 });
 
-// Add scroll effect to header
+// Combined scroll handler for better performance
 let lastScroll = 0;
-const header = document.querySelector('header');
+let ticking = false;
 
-window.addEventListener('scroll', () => {
+function handleScroll() {
     const currentScroll = window.pageYOffset;
+    const header = document.querySelector('header');
+    const hero = document.querySelector('.hero');
     
-    if (currentScroll <= 0) {
-        header.style.boxShadow = 'none';
-    } else {
-        header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+    // Header shadow effect
+    if (header) {
+        if (currentScroll <= 0) {
+            header.style.boxShadow = 'none';
+        } else {
+            header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+        }
+    }
+    
+    // Parallax effect for hero
+    if (hero) {
+        hero.style.transform = `translateY(${currentScroll * 0.5}px)`;
+        hero.style.opacity = 1 - (currentScroll / 600);
     }
     
     lastScroll = currentScroll;
-});
+    ticking = false;
+}
 
-// Add parallax effect to hero section
 window.addEventListener('scroll', () => {
-    const hero = document.querySelector('.hero');
-    const scrolled = window.pageYOffset;
-    if (hero) {
-        hero.style.transform = `translateY(${scrolled * 0.5}px)`;
-        hero.style.opacity = 1 - (scrolled / 600);
+    if (!ticking) {
+        window.requestAnimationFrame(handleScroll);
+        ticking = true;
     }
 });
 
@@ -162,21 +171,23 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Initialize connections on load
-document.addEventListener('DOMContentLoaded', createConnections);
-
-// Add interactive tooltip effect for cards
-document.querySelectorAll('.card').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-        this.style.transition = 'all 0.3s ease';
-        this.style.borderLeft = '4px solid var(--secondary-color)';
+// Initialize connections and card effects on load
+document.addEventListener('DOMContentLoaded', () => {
+    createConnections();
+    
+    // Add interactive tooltip effect for cards
+    document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transition = 'all 0.3s ease';
+            this.style.borderLeft = '4px solid #3498db';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.borderLeft = 'none';
+        });
     });
     
-    card.addEventListener('mouseleave', function() {
-        this.style.borderLeft = 'none';
-    });
+    // Log page load
+    console.log('The World\'s Grasp on Society - Page Loaded Successfully');
+    console.log('Exploring the intersection of technology and human experience...');
 });
-
-// Log page load
-console.log('The World\'s Grasp on Society - Page Loaded Successfully');
-console.log('Exploring the intersection of technology and human experience...');
